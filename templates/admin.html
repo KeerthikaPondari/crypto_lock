@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Team Database</title>
+</head>
+
+<body>
+
+<h2>Team Database</h2>
+
+<table border="1">
+
+<tr>
+<th>ID</th>
+<th>Team</th>
+<th>Score</th>
+<th>Played At</th>
+</tr>
+
+{% for row in data %}
+
+<tr>
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

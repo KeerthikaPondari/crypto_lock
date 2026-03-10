@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Crack the Password</title>
+
+<style>
+
+body{
+background:#080c08;
+color:white;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+background:#0e130e;
+border:1px solid #1a241a;
+border-radius:8px;
+padding:40px;
+text-align:center;
+width:420px;
+}
+
+h1{
+font-size:28px;
+}
+
+.hint{
+background:#1a241a;
+padding:15px;
+margin:20px 0;
+border-radius:6px;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:5px;
+border:1px solid #333;
+background:#101610;
+color:white;
+}
+
+button{
+width:100%;
+margin-top:15px;
+padding:12px;
+border:none;
+background:#e8b84b;
+border-radius:6px;
+cursor:pointer;
+}
+
+.error{
+color:red;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Tech Word Challenge</h2>
+
+<h1>🔐 Crack the Password</h1>
+
+<p>Guess the hidden tech word using the hint below</p>
+
+<div style="font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #ff6b6b;">
+    ⏳ Time Left: <span id="time-display">--:--</span>
+</div>
+
+<div class="hint">
+
+<b>Hint:</b> {{ hint }}
+
+</div>
+
+{% if error %}
+
+<div class="error">
+Wrong Password! The word has {{ small_hint }}
+</div>
+{% endif %}
+
+<form action="/unlock" method="POST">
+
+<input
+type="text"
+name="password"
+placeholder="Type the secret word..."
+required
+
+>
+
+<button type="submit">Unlock →</button>
+
+</form>
+
+</div>
+
+<script>
+    let timeLeft = parseInt("{{ timer }}", 10);
+    if (isNaN(timeLeft)) timeLeft = 180;
+    const timeDisplay = document.getElementById('time-display');
+
+    function playBeepAndRedirect() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            // Beep sound
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+            
+            // Volume
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+                window.location.href = '/timeout';
+            }, 800); // 800ms beep duration before redirect
+        } catch (e) {
+            window.location.href = '/timeout';
+        }
+    }
+
+    function updateDisplay() {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timeDisplay.textContent = "00:00";
+            playBeepAndRedirect();
+            return;
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timeDisplay.textContent = 
+            (minutes < 10 ? "0" : "") + minutes + ":" + 
+            (seconds < 10 ? "0" : "") + seconds;
+    }
+
+    updateDisplay();
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+    }, 1000);
+</script>
+
+</body>
+</html>

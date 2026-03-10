@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Lock Challenge</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; }
+
+body {
+    background: #070812;
+    color: white;
+    font-family: 'DM Sans';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+.badge {
+    border: 1px solid #4f4fff;
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #a5a5ff;
+}
+
+h1 {
+    font-family: 'Bebas Neue';
+    font-size: 60px;
+    letter-spacing: 3px;
+}
+
+h1 span { color: #e8b84b; }
+
+.subtitle {
+    color: #8b8fb5;
+    margin-top: 10px;
+}
+
+.card {
+    background: #0f1021;
+    border: 1px solid #262657;
+    border-radius: 8px;
+    padding: 30px;
+    margin-top: 30px;
+    text-align: left;
+}
+
+label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #8b8fb5;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    background: #141433;
+    border: 1px solid #2d2d5a;
+    border-radius: 6px;
+    color: white;
+    box-sizing: border-box;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input:focus { border-color: #8c7cff; }
+
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #8c7cff, #a98cff);
+    font-family: 'Bebas Neue';
+    font-size: 18px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    color: white;
+    transition: opacity 0.2s;
+}
+
+button:hover { opacity: 0.85; }
+
+
+/* ─── COUNTDOWN OVERLAY ─────────────────────────────── */
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #070812;
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.overlay.show { display: flex; }
+
+.team-greeting {
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: #8b8fb5;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.team-name-display {
+    font-family: 'Bebas Neue';
+    font-size: 42px;
+    letter-spacing: 4px;
+    color: #a5a5ff;
+    margin-bottom: 30px;
+}
+
+.get-ready {
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #8b8fb5;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+/* Big 3-min countdown */
+.big-timer {
+    font-family: 'Bebas Neue';
+    font-size: 110px;
+    letter-spacing: 8px;
+    color: #e8b84b;
+    line-height: 1;
+    transition: color 0.4s;
+}
+
+.big-timer.warning { color: #ff4444; animation: pulse 0.7s infinite; }
+
+@keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.07); opacity: 0.75; }
+}
+
+/* progress bar */
+.bar-bg {
+    width: 320px;
+    max-width: 90vw;
+    height: 5px;
+    background: #1a1a35;
+    border-radius: 4px;
+    margin: 18px auto 28px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 5px;
+    width: 100%;
+    background: linear-gradient(90deg, #8c7cff, #e8b84b);
+    border-radius: 4px;
+    transition: width 1s linear, background 0.4s;
+}
+
+.bar-fill.warning { background: linear-gradient(90deg, #ff4444, #ff8800); }
+
+.hint-msg {
+    color: #8b8fb5;
+    font-size: 0.88rem;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+/* GO button — appears at end */
+.go-btn {
+    display: none;
+    padding: 16px 50px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #28a745, #1e7e34);
+    font-family: 'Bebas Neue';
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: white;
+    cursor: pointer;
+    animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+    0%   { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ─── ENTRY FORM ─────────────────────────── -->
+<div class="container" id="formSection">
+
+    <div class="badge">CRYPTO LOCK</div>
+
+    <h1>CRACK THE <span>PASSWORD</span> 🔐</h1>
+
+    <p class="subtitle">
+        Guess hidden tech words from hints — unlock Telugu movie &amp; dialogue rewards!
+    </p>
+
+    <div class="card">
+
+        <h2>WHO'S PLAYING?</h2>
+
+        <form id="startForm" method="POST" action="/">
+
+            <label>TEAM NAME</label>
+
+            <input
+                type="text"
+                name="team"
+                id="teamInput"
+                placeholder="e.g. Team Tigers"
+                required
+                autocomplete="off"
+            >
+
+            <button type="button" onclick="beginCountdown()">START THE CHALLENGE →</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ─── COUNTDOWN OVERLAY ─────────────────── -->
+<div class="overlay" id="overlay">
+
+    <div class="team-greeting">GET READY —</div>
+    <div class="team-name-display" id="overlayTeamName"></div>
+
+    <div class="get-ready">YOUR 3 MINUTE TIMER STARTS NOW</div>
+
+    <div class="big-timer" id="bigTimer">03:00</div>
+
+    <div class="bar-bg">
+        <div class="bar-fill" id="barFill"></div>
+    </div>
+
+    <div class="hint-msg" id="hintMsg">⏳ Hint will appear automatically when timer starts...</div>
+
+    <!-- Shows after 3 sec if they want to go immediately -->
+    <button class="go-btn" id="goBtn" onclick="submitNow()">GO TO HINT →</button>
+
+</div>
+
+
+<script>
+    const TOTAL = 180; // 3 minutes in seconds
+
+    function beginCountdown() {
+        const teamInput = document.getElementById("teamInput");
+        const teamName  = teamInput.value.trim();
+
+        if (!teamName) {
+            teamInput.focus();
+            teamInput.style.borderColor = "#ff4444";
+            return;
+        }
+
+        // Show overlay with team name
+        document.getElementById("overlayTeamName").textContent = teamName.toUpperCase();
+        document.getElementById("overlay").classList.add("show");
+
+        // Save end time to sessionStorage so index.html timer picks it up
+        const endTime = Date.now() + TOTAL * 1000;
+        sessionStorage.setItem("cryptoTimerEnd_" + teamName, endTime);
+
+        // Start visual countdown
+        runCountdown(teamName);
+    }
+
+    function runCountdown(teamName) {
+        const display  = document.getElementById("bigTimer");
+        const bar      = document.getElementById("barFill");
+        const hintMsg  = document.getElementById("hintMsg");
+        const goBtn    = document.getElementById("goBtn");
+
+        let timeLeft = TOTAL;
+
+        function formatTime(s) {
+            const m   = Math.floor(s / 60);
+            const sec = s % 60;
+            return String(m).padStart(2,"0") + ":" + String(sec).padStart(2,"0");
+        }
+
+        display.textContent = formatTime(timeLeft);
+
+        // Show GO button after 3 seconds so team can skip to hint
+        setTimeout(() => {
+            hintMsg.textContent = "✅ Timer running! Click below to see your hint.";
+            goBtn.style.display = "inline-block";
+        }, 3000);
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            display.textContent = formatTime(timeLeft);
+            bar.style.width = ((timeLeft / TOTAL) * 100) + "%";
+
+            // Warning under 30s
+            if (timeLeft <= 30) {
+                display.classList.add("warning");
+                bar.classList.add("warning");
+            }
+
+            // Auto-submit when timer reaches 0
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                display.textContent = "00:00";
+                bar.style.width = "0%";
+                submitForm();
+            }
+
+        }, 1000);
+    }
+
+    function submitNow() {
+        submitForm();
+    }
+
+    function submitForm() {
+        // Submit the hidden form to Flask to register the team
+        document.getElementById("startForm").submit();
+    }
+</script>
+
+</body>
+</html>
